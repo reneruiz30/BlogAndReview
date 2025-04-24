@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blog and Reviews</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -14,7 +15,39 @@
       plugins: []
     };
   </script>
-  
+
+  <script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        keyframes: {
+          typing: {
+            "0%": {
+              width: "0%",
+              visibility: "hidden"
+            },
+            "100%": {
+              width: "25%"
+            }
+          },
+          blink: {
+            "50%": {
+              borderColor: "transparent"
+            },
+            "100%": {
+              borderColor: "white"
+            }
+          }
+        },
+        animation: {
+          typing: "typing 2s steps(20) alternate, blink .3s"
+        }
+      },
+    },
+    plugins: [],
+  }
+</script>
+
   <style>
   html {
     background-color: white;
@@ -45,11 +78,12 @@
     transition: box-shadow 0.3s ease;
   }
 </style>
+
 </head>
 <body id="body" class="flex flex-col min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white font-sans transition-all duration-700 ease-in-out">
   <nav class="bg-white dark:bg-gradient-to-r dark:from-gray-900 dark:to-gray-700 shadow-md py-4 px-6 transition-colors">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
-      <a href="{% url 'blogapp:blog_list' %}" class="text-gray-900 dark:text-white text-2xl font-semibold tracking-wider transition-colors">BlogSpace</a>
+      <a href="{% url 'blogapp:blog_list' %}" class="text-gray-900 dark:text-white text-2xl font-semibold tracking-wider transition-colors animate-typing overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5  ">BlogSpace</a>
       <div class="flex items-center space-x-4">
         <button onclick="toggleDarkMode()" class="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 text-gray-900 dark:text-white hover:scale-105 transition-all duration-300 shadow-lg">
   <span id="theme-icon" class="transition-transform duration-500 transform">🌞</span>
@@ -59,7 +93,7 @@
   Sign In
 </button>
         {% if user.is_authenticated %}
-          <a href="{% url 'blogapp:add_blog' %}" class="bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white font-medium py-2 px-4 rounded transition-all duration-500 ease-in-out">New Blog</a>
+          <a href="{% url 'blogapp:add_blog' %}" class="bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white font-medium py-2 px-4 rounded transition-all duration-500 ease-in-out animate-bounce focus:animate-none hover:animate-none inline-flex text-md font-medium bg-indigo-900 mt-3 px-4 py-2 rounded-lg tracking-wide text-white ">New Blog</a>
         {% endif %}
       </div>
     </div>
