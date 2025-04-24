@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
   <h1 class="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">All Blogs</h1>
+  <h2  class="text-xl  mb-6 text-justify text-gray-900 dark:text-white" > "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</h2>
   <div class="grid gap-6">
     {% for blog in object_list %}
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-700 ease-in-out dark:text-white text-gray-900 animate-fade-in">
