@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
-from ckeditor.fields import RichTextField
+from django_ckeditor_5.fields import CKEditor5Field
 
 # MODELOS
 
@@ -9,7 +9,8 @@ class Blog(models.Model):
     title = models.CharField(max_length=200)
     #ENRICH TEXT ADDED
     
-    content = RichTextField(blank=True, null=True)
+    # content = RichTextField()
+    content = CKEditor5Field('Content', config_name='extends')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -1,17 +1,241 @@
-{% extends 'base.html' %}
+{% extends 'blogapp/base.html' %}
+{% load static %}
 {% block content %}
-  <h1 class="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">All Blogs</h1>
-  <h2  class="text-xl  mb-6 text-justify text-gray-900 dark:text-white" > "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</h2>
-  <div class="grid gap-6">
-    {% for blog in object_list %}
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-700 ease-in-out dark:text-white text-gray-900 animate-fade-in">
-        <h2 class="text-xl font-semibold mb-2">
-          <a href="{% url 'blogapp:blog_detail' blog.pk %}" class="text-blue-400 hover:text-blue-300">{{ blog.title }}</a>
+<style>
+    body {
+        background: #10151c !important;
+        font-family: 'Montserrat', 'Georgia', serif;
+        color: #fff;
+    }
+    /* Modo claro */
+    body.light-mode {
+        background: #f5f5f5 !important;
+        color: #222;
+    }
+    body.light-mode .mntn-hero-content h1,
+    body.light-mode .mntn-section-content h2 {
+        color: #222;
+        text-shadow: none;
+    }
+    body.light-mode .mntn-section-content h2 a {
+        color: #222 !important;
+    }
+    body.light-mode .mntn-section-content h2 a:hover {
+        color: #b8860b !important;
+    }
+    body.light-mode .mntn-section-title,
+    body.light-mode .mntn-readmore,
+    body.light-mode .mntn-scroll {
+        color: #b8860b;
+    }
+    body.light-mode .mntn-section-content p,
+    body.light-mode .mntn-hero-content .mntn-desc {
+        color: #444;
+    }
+    body.light-mode .mntn-section-number {
+        color: rgba(0,0,0,0.08);
+    }
+    .mntn-hero {
+        position: relative;
+        width: 100vw;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        min-height: 600px;
+        background: url('{% static "blogapp/Banner.jpg" %}') center/cover no-repeat;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding-bottom: 80px;
+        overflow: hidden;
+    }
+    .mntn-hero-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(180deg, rgba(16,21,28,0.2) 0%, rgba(16,21,28,0.85) 100%);
+        z-index: 1;
+    }
+    .mntn-hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: left;
+        padding: 0 24px;
+    }
+    .mntn-hero-content .mntn-guide {
+        color: #e3b97b;
+        font-size: 1rem;
+        letter-spacing: 2px;
+        font-weight: 700;
+        margin-bottom: 18px;
+        display: inline-block;
+    }
+    .mntn-hero-content h1 {
+        font-size: 3.2rem;
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 18px;
+        color: #fff;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    }
+    .mntn-hero-content .mntn-desc {
+        font-size: 1.2rem;
+        color: #e0e0e0;
+        margin-bottom: 32px;
+        max-width: 600px;
+    }
+    .mntn-scroll {
+        color: #e3b97b;
+        font-size: 1rem;
+        margin-top: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+    }
+    .mntn-section {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto 120px auto;
+        padding: 0 24px;
+        gap: 48px;
+        position: relative;
+    }
+    .mntn-section.reverse {
+        flex-direction: row-reverse;
+    }
+    .mntn-section-img {
+        width: 420px;
+        min-width: 320px;
+        height: 420px;
+        background: #222;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        background-size: cover;
+        background-position: center;
+    }
+    .mntn-section-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 32px 0;
+        position: relative;
+    }
+    .mntn-section-number {
+        position: absolute;
+        top: 0;
+        left: 0;
+        font-size: 7rem;
+        font-weight: 900;
+        color: rgba(255,255,255,0.06);
+        z-index: 0;
+        pointer-events: none;
+        user-select: none;
+    }
+    .mntn-section-title {
+        color: #e3b97b;
+        font-size: 1rem;
+        letter-spacing: 2px;
+        font-weight: 700;
+        margin-bottom: 18px;
+        z-index: 1;
+        position: relative;
+    }
+    .mntn-section-content h2 {
+        font-size: 2.1rem;
+        font-weight: 800;
+        margin-bottom: 18px;
+        color: #fff;
+        z-index: 1;
+        position: relative;
+    }
+    .mntn-section-content p {
+        font-size: 1.1rem;
+        color: #e0e0e0;
+        margin-bottom: 24px;
+        z-index: 1;
+        position: relative;
+    }
+    .mntn-section-content .mntn-readmore {
+        color: #e3b97b;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1rem;
+        z-index: 1;
+        position: relative;
+        transition: color 0.2s;
+    }
+    .mntn-section-content .mntn-readmore:hover {
+        color: #fff;
+        text-decoration: underline;
+    }
+    @media (max-width: 900px) {
+        .mntn-section, .mntn-section.reverse {
+            flex-direction: column !important;
+            align-items: center;
+            gap: 24px;
+        }
+        .mntn-section-img {
+            width: 100%;
+            min-width: 0;
+            height: 260px;
+        }
+        .mntn-section-content {
+            padding: 0;
+        }
+        .mntn-section-number {
+            font-size: 4rem;
+        }
+    }
+</style>
+
+<div class="mntn-hero">
+    <div class="mntn-hero-overlay"></div>
+    <div class="mntn-hero-content">
+        <span class="mntn-guide">Bienvenido</span>
+        <h1>BLOG <br>TheBuilders</h1>
+        <div class="mntn-desc">
+            Descripción.
+        </div>
+        <div class="mntn-scroll">
+            scroll down <span style="font-size:1.5em;">&#8595;</span>
+        </div>
+    </div>
+</div>
+
+{% for blog in object_list %}
+<div class="mntn-section {% if forloop.counter|divisibleby:2 %}reverse{% endif %}">
+    <div class="mntn-section-content">
+        <span class="mntn-section-number">{% if forloop.counter < 10 %}0{% endif %}{{ forloop.counter }}</span>
+        <span class="mntn-section-title">BLOG</span>
+        <h2>
+            <a href="{% url 'blogapp:blog_detail' blog.pk %}" class="text-white hover:text-e3b97b">{{ blog.title }}</a>
         </h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400">by {{ blog.author.username }} - {{ blog.created_at }}</p>
-      </div>
-    {% empty %}
-      <p class="text-gray-500 dark:text-gray-400 text-center">No blogs have been posted yet.</p>
-    {% endfor %}
-  </div>
+        <p>
+            por {{ blog.author.username }} - {{ blog.created_at|date:"F j, Y, g:i a" }}
+        </p>
+        <a href="{% url 'blogapp:blog_detail' blog.pk %}" class="mntn-readmore">read more &rarr;</a>
+    </div>
+    <div class="mntn-section-img" style="background-image: url('{% if blog.image %}{{ blog.image.url }}{% else %}{% static 'blogapp/imagen2.jpg' %}{% endif %}');"></div>
+</div>
+{% empty %}
+<p class="text-gray-500 dark:text-gray-400 text-center" style="margin-top: 60px;">No blogs have been posted yet.</p>
+{% endfor %}
+
 {% endblock %}
+
+<!-- Botón para cambiar de modo -->
+<button id="toggleMode" style="position:fixed;top:20px;right:20px;z-index:999;">Cambiar modo</button>
+
+<script>
+    const btn = document.getElementById('toggleMode');
+    btn.addEventListener('click', function() {
+        document.body.classList.toggle('light-mode');
+    });
+</script>
