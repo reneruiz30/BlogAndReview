@@ -2,13 +2,15 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
 from .models import Blog, Review, Comment
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.decorators.cache import never_cache
+from django.utils.decorators import method_decorator
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from .forms import RegisterForm
 from django import forms
-
+from django.contrib.auth.decorators import login_required
 
 from .forms import RegisterForm
 from django.shortcuts import render, redirect
@@ -17,9 +19,14 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetView
 
-class BlogListView(ListView):
+
+
+# Aplica LoginRequiredMixin y never_cache a BlogListView
+@method_decorator(never_cache, name='dispatch')
+class BlogListView(LoginRequiredMixin, ListView):
     model = Blog
     template_name = 'blogapp/blog_list.html'
+    login_url = 'login'
 
 
 class BlogDetailView(DetailView):
@@ -52,6 +59,10 @@ class ReviewCreateView(CreateView):
 
     def get_success_url(self):
         return reverse_lazy('blogapp:blog_detail', kwargs={'pk': self.kwargs['pk']})
+
+
+def bienvenida(request):
+    return render(request, 'blogapp/Bienvenida.html')
 
 
 # Login
@@ -115,3 +126,6 @@ def add_comment(request, blog_pk, review_pk):
     else:
         form = CommentForm()
     return render(request, 'blogapp/add_comment.html', {'form': form, 'review': review})
+
+    
+

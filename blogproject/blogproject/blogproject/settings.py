@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blogapp',
     'widget_tweaks',
+    'django_ckeditor_5',  # <-- Agrega esta línea
 ]
 
 MIDDLEWARE = [
@@ -83,6 +84,9 @@ DATABASES = {
     }
 }
 
+# Envio de Correo - Cambio de Contraseña
+
+
 
 
 # Password validation
@@ -122,4 +126,8 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LOGIN_REDIRECT_URL = 'blog_list.html'  # Redirige a donde quieras
+
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
