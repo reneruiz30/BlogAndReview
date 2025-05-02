@@ -8,8 +8,12 @@ from ckeditor.fields import RichTextField
 class Blog(models.Model):
     title = models.CharField(max_length=200)
     #ENRICH TEXT ADDED
+<<<<<<< Updated upstream
     
     content = RichTextField(blank=True, null=True)
+=======
+    content = CKEditor5Field('content',blank=True, null=True, config_name='default')
+>>>>>>> Stashed changes
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

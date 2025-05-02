@@ -83,6 +83,12 @@ DATABASES = {
     }
 }
 
+<<<<<<< Updated upstream
+=======
+# Envio de Correo - Cambio de Contraseñ
+
+
+>>>>>>> Stashed changes
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -125,4 +131,27 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+<<<<<<< Updated upstream
 CKEDITOR_UPLOAD_PATH = 'content/ckeditor/'
+=======
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+#RICH TEXT AND IMAGES
+CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': [
+            'heading', '|', 'bold', 'italic', 'link',
+            'bulletedList', 'numberedList', 'blockQuote', '|',
+            'imageUpload', 'undo', 'redo'
+        ],
+        'language': 'en',
+        'image': {
+            'toolbar': ['imageTextAlternative', 'imageStyle:full', 'imageStyle:side']
+        }
+    }
+}
+>>>>>>> Stashed changes
