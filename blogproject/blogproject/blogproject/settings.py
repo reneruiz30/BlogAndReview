@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blogapp',
     'widget_tweaks',
-    'django_ckeditor_5',  # <-- Agrega esta línea
+    'django_ckeditor_5',
 ]
 
 MIDDLEWARE = [
@@ -58,7 +58,7 @@ ROOT_URLCONF = 'blogproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['blogapp/templates'],
+        'DIRS': ['blogapp/templates/blogapp'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,10 +84,8 @@ DATABASES = {
     }
 }
 
-# Envio de Correo - Cambio de Contraseña
 
-
-
+# Envio de Correo - Cambio de Contraseñ
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -96,8 +94,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
-    
-    
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
 
@@ -117,17 +122,28 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'blogapp/static'),
-]
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+CKEDITOR_UPLOAD_PATH = 'content/ckeditor/'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+#RICH TEXT AND IMAGES
+CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': [
+            'heading', '|', 'bold', 'italic', 'link',
+            'bulletedList', 'numberedList', 'blockQuote', '|',
+            'imageUpload', 'undo', 'redo'
+        ],
+        'language': 'en',
+        'image': {
+            'toolbar': ['imageTextAlternative', 'imageStyle:full', 'imageStyle:side']
+        }
+    }
+}

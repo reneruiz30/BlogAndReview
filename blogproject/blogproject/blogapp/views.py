@@ -37,7 +37,7 @@ class BlogDetailView(DetailView):
 class BlogCreateView(LoginRequiredMixin, CreateView):
     model = Blog
     fields = ['title', 'content']
-    template_name = 'blog_form.html'
+    template_name = 'blogapp/blog_form.html'
 
     def form_valid(self, form):
         form.instance.author = self.request.user

@@ -10,7 +10,7 @@ class Blog(models.Model):
     #ENRICH TEXT ADDED
     
     # content = RichTextField()
-    content = CKEditor5Field('Content', config_name='extends')
+    content = CKEditor5Field('Content', config_name='default')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='blog_images/', blank=True, null=True)
