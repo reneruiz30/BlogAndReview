@@ -14,6 +14,86 @@
         color: #fff;
         height: 100vh;
     }
+    /* Encabezado */
+    .custom-header {
+        background-color: rgba(24, 28, 34, 0.75); 
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 101; 
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(6px);
+    }
+    .custom-header button {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        margin: 0 5px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-family: 'Montserrat', 'Georgia', serif;
+    }
+    .custom-header button:hover {
+        background-color: #555;
+    }
+    
+    .header-center {
+        position: absolute;
+        left: 50%;
+        top: 10px;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+    }
+    .header-center .center-text {
+        color: #e3b97b; 
+        font-family: 'Montserrat', 'Georgia', serif;
+        font-size: 1rem;
+        font-weight: 400;
+        margin: 0 5px;
+    }
+    .header-center img {
+        width: 50px;
+        height: 50px;
+        margin-left: 10px;
+    }
+
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        font-family: 'Montserrat', 'Georgia', serif;
+    }
+    .dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+    .dropdown:hover .dropbtn {
+        background-color: #555;
+    }
+   
     .hero-carrusel-bg {
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
@@ -23,7 +103,6 @@
         overflow: hidden;
         z-index: 0;
         transform: scale(1);
-        /* No animation por defecto, se activa por JS */
     }
     .hero-carrusel-bg.kenburns {
         animation: heroZoom 1.2s cubic-bezier(.4,2,.6,1) forwards;
@@ -203,7 +282,6 @@
         .carrusel-arrow.right { right: 2vw; }
         .carrusel-indicator { right: 2vw; }
     }
-
     .user-info-header {
         position: fixed;
         top: 24px;
@@ -276,8 +354,44 @@
         background: #1e40af;
         color: #e3b97b;
     }
-
 </style>
+
+<!-- Encabezado con botones -->
+<header class="custom-header">
+    <div>
+        <button>INICIO</button>
+        <div class="dropdown">
+            <button class="dropbtn">DESTINOS</button>
+            <div class="dropdown-content">
+                <a href="#">Playa</a>
+                <a href="#">Montaña</a>
+                <a href="#">Ciudad</a>
+            </div>
+        </div>
+        
+<div class="header-center">
+    
+    <img src="https://iili.io/3XIOgUB.png" alt="TheBuilders" class="logo-fixed">
+    <span class="center-text">THE BUILDERS</span>
+</div>
+    </div>
+    <div>
+        <div class="dropdown">
+            <button class="dropbtn">TIPO DE VIAJE</button>
+            <div class="dropdown-content">
+                <a href="#">Aventura</a>
+                <a href="#">Relax</a>
+                <a href="#">Cultural</a>
+            </div>
+        </div>
+        <button>NOSOTROS</button>
+        <form id="logoutForm" action="{% url 'blogapp:logout' %}?next=/login/" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="sign-btn">SALIR</button>
+        </form>
+    </div>
+</header>
+
 
 <div class="hero-carrusel-bg" id="heroBg">
     <div class="hero-carrusel-overlay"></div>
@@ -290,7 +404,7 @@
         <a href="#" class="main-btn" id="mainBtn">Descubrir</a>
     </div>
 </div>
-<button class="carrusel-arrow left" onclick="moveCarrusel(-1)">&lt;</button>
+<button class="carrusel-arrow left" onclick="moveCarrusel(-1)"><</button>
 <div class="carrusel-cards-viewport">
     <div class="carrusel-cards-container" id="carruselCards">
         {% for blog in object_list %}
@@ -308,7 +422,7 @@
         {% endfor %}
     </div>
 </div>
-<button class="carrusel-arrow right" onclick="moveCarrusel(1)">&gt;</button>
+<button class="carrusel-arrow right" onclick="moveCarrusel(1)">></button>
 <div class="carrusel-indicator" id="carruselIndicator">01</div>
 
 <button id="toggleMode" style="position:fixed;top:20px;right:20px;z-index:999;"></button>
@@ -327,14 +441,10 @@
     let mainLocation, mainTitle, mainDesc, mainBtn, indicator, heroBg;
 
     function animateHeroBgKenBurns(newBg) {
-        // Detener animación previa y reiniciar transform
         heroBg.classList.remove('kenburns');
         heroBg.style.transform = 'scale(1)';
-        // Forzar reflow para reiniciar animación
         void heroBg.offsetWidth;
-        // Cambiar la imagen de fondo
         heroBg.style.backgroundImage = `url('${newBg}')`;
-        // Activar animación Ken Burns
         heroBg.classList.add('kenburns');
     }
 
@@ -342,17 +452,14 @@
         cards.forEach((card, idx) => {
             card.classList.toggle('active', idx === current);
         });
-        // Centrar el carrusel
         const offset = (current - 2) * (cards[0]?.offsetWidth + 24 || 224);
         container.style.transform = `translateX(${-offset}px)`;
-        // Actualiza la tarjeta principal
         if(cards[current]) {
             mainLocation.textContent = cards[current].dataset.location || 'Sin ubicación';
             mainTitle.textContent = cards[current].dataset.title || '';
             mainDesc.textContent = cards[current].dataset.desc || '';
             mainBtn.href = cards[current].dataset.url || '#';
             indicator.textContent = (current+1).toString().padStart(2, '0');
-            // Cambia el fondo de la página con animación tipo Ken Burns
             animateHeroBgKenBurns(cards[current].dataset.bg);
         }
     }
@@ -385,7 +492,8 @@
         window.addEventListener('resize', updateCarrusel);
     });
 </script>
-<!-- Usuario logueado en la esquina superior izquierda -->
+
+<!-- Usuario logueado en la esquina superior izquierda 
 <div class="user-info-header">
     <span>👤 {{ user.username }}</span>
     {% if user.is_superuser %}
@@ -400,5 +508,5 @@
         <button type="submit" class="sign-btn">Sign In</button>
     </form>
     <a href="{% url 'blogapp:add_blog' %}" class="newblog-btn">New Blog</a>
-</div>
+</div>-->
 {% endblock %}
