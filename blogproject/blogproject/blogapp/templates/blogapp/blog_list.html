@@ -283,14 +283,11 @@
     <div class="hero-carrusel-overlay"></div>
 </div>
 <div class="hero-main-card" id="mainCard">
-    <span class="main-location" id="mainLocation"></span>
+
     <h1 id="mainTitle"></h1>
-    <div class="main-desc" id="mainDesc"></div>
-    <div class="main-actions">
-        <a href="#" class="main-btn" id="mainBtn">Descubrir</a>
-    </div>
+  
 </div>
-<button class="carrusel-arrow left" onclick="moveCarrusel(-1)">&lt;</button>
+<button class="carrusel-arrow left" onclick="moveCarrusel(-1)"><</button>
 <div class="carrusel-cards-viewport">
     <div class="carrusel-cards-container" id="carruselCards">
         {% for blog in object_list %}
@@ -298,17 +295,17 @@
             style="background-image: url('{% if blog.image %}{{ blog.image.url }}{% else %}{% static 'blogapp/Banner2.jpg' %}{% endif %}');"
             data-index="{{ forloop.counter0 }}"
             data-title="{{ blog.title|escapejs }}"
-            data-location="{{ blog.location|default:'Sin ubicación'|escapejs }}"
-            data-desc="{{ blog.description|default:'Sin descripción'|escapejs }}"
             data-url="{% url 'blogapp:blog_detail' blog.pk %}"
             data-bg="{% if blog.image %}{{ blog.image.url }}{% else %}{% static 'blogapp/Banner2.jpg' %}{% endif %}">
-            <div class="carrusel-meta">{{ blog.location|default:"Ubicación desconocida" }}</div>
+            <!-- Elimina la meta de ubicación -->
+            <!-- <div class="carrusel-meta">{{ blog.location|default:"Ubicación desconocida" }}</div> -->
             <div class="carrusel-title">{{ blog.title }}</div>
+            <!-- Elimina la descripción si existía aquí -->
         </div>
         {% endfor %}
     </div>
 </div>
-<button class="carrusel-arrow right" onclick="moveCarrusel(1)">&gt;</button>
+<button class="carrusel-arrow right" onclick="moveCarrusel(1)">></button>
 <div class="carrusel-indicator" id="carruselIndicator">01</div>
 
 <button id="toggleMode" style="position:fixed;top:20px;right:20px;z-index:999;"></button>

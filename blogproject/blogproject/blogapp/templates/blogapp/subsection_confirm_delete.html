@@ -1,0 +1,9 @@
+{% extends 'blogapp/base.html' %}
+{% block content %}
+  <h2>¿Estás seguro de que deseas eliminar esta sub-sección?</h2>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, eliminar</button>
+    <a href="{% url 'blogapp:blog_detail' object.blog.pk %}">Cancelar</a>
+  </form>
+{% endblock %}

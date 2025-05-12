@@ -1,0 +1,14 @@
+{% extends 'blogapp/base.html' %}
+{% block content %}
+<div class="max-w-2xl mx-auto mt-8">
+    <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Editar Publicación</h1>
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2 transition">
+            Guardar Cambios
+        </button>
+        <a href="{% url 'blogapp:subsection_detail' post.subsection.pk %}" class="inline-block text-gray-600 hover:text-gray-800">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

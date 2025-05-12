@@ -1,0 +1,488 @@
+{% extends 'blogapp/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+
+<style>
+/* HERO SECTION */
+.hero-section {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    border-radius: 24px;
+    overflow: hidden;
+    min-height: 260px;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 8px 32px rgba(30,58,138,0.18), 0 1.5px 8px rgba(14,165,233,0.10);
+}
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(30,58,138,0.65) 0%, rgba(14,165,233,0.45) 100%);
+    z-index: 1;
+}
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 3.5rem 2rem 2.5rem 2rem;
+    text-align: center;
+    color: #fff;
+}
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.7rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.25);
+}
+.hero-subtitle {
+    font-size: 1.15rem;
+    margin-bottom: 1.5rem;
+    color: #e0e7ef;
+    font-weight: 400;
+}
+.hero-button {
+    display: inline-block;
+    background: linear-gradient(90deg, #0ea5e9 40%, #2563eb 100%);
+    color: #fff;
+    padding: 0.7rem 2.2rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(14,165,233,0.10);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.hero-button:hover {
+    background: linear-gradient(90deg, #2563eb 40%, #0ea5e9 100%);
+    box-shadow: 0 4px 16px #0ea5e955;
+}
+
+/* FORMULARIO DE PUBLICACIÓN */
+.post-form-container {
+    background: rgba(24, 28, 34, 0.98);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(30,58,138,0.18), 0 1.5px 8px rgba(14,165,233,0.10);
+    padding: 2.5rem 2rem 2rem 2rem;
+    margin-bottom: 2rem;
+}
+.elegant-form .form-label {
+    font-size: 1.08rem;
+    margin-bottom: 0.3rem;
+    color: #e0e7ef;
+    font-weight: 600;
+}
+.elegant-form .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.2rem;
+}
+.elegant-form .form-textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: 1.5px solid #2563eb;
+    padding: 1rem;
+    font-size: 1.08rem;
+    resize: vertical;
+    background: #181c22;
+    color: #e0e7ef;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(30,58,138,0.10);
+}
+.elegant-form .form-textarea:focus {
+    border-color: #0ea5e9;
+    outline: none;
+    box-shadow: 0 0 0 2px #0ea5e9aa;
+}
+.elegant-form .form-file {
+    border: none;
+    background: none;
+    font-size: 1rem;
+    color: #e0e7ef;
+    margin-top: 0.2rem;
+}
+.form-submit-btn {
+    background: linear-gradient(90deg, #0ea5e9 40%, #2563eb 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    margin-top: 0.5rem;
+    box-shadow: 0 2px 8px rgba(14,165,233,0.10);
+    letter-spacing: 0.5px;
+}
+.form-submit-btn:hover {
+    background: linear-gradient(90deg, #2563eb 40%, #0ea5e9 100%);
+    box-shadow: 0 4px 16px #0ea5e955;
+}
+
+/* POSTS */
+.post-card {
+    background: #fff;
+    color: #181c22;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(30,58,138,0.10);
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+    margin-bottom: 2rem;
+    transition: box-shadow 0.2s;
+}
+.dark .post-card {
+    background: #181c22;
+    color: #e0e7ef;
+}
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.7rem;
+}
+.post-author {
+    font-weight: bold;
+    color: #2563eb;
+}
+.dark .post-author {
+    color: #bae6fd;
+}
+.post-date {
+    font-size: 0.92rem;
+    color: #64748b;
+}
+.dark .post-date {
+    color: #94a3b8;
+}
+.post-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 1rem;
+}
+.post-actions a, .post-actions button {
+    font-size: 0.98rem;
+    font-weight: 600;
+    background: none;
+    border: none;
+    color: #2563eb;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.post-actions a:hover, .post-actions button:hover {
+    color: #e11d48;
+}
+.post-text {
+    margin-bottom: 1.2rem;
+    font-size: 1.13rem;
+    font-weight: 500;
+}
+.post-media {
+    display: block;
+    margin: 0 auto 1.2rem auto;
+    border-radius: 12px;
+    max-height: 340px;
+    background: #e0e7ef;
+}
+.dark .post-media {
+    background: #334155;
+}
+.post-interactions {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 0.5rem;
+}
+.post-interactions button, .post-interactions a {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #334155;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.dark .post-interactions button, .dark .post-interactions a {
+    color: #e0e7ef;
+}
+.post-interactions button:hover, .post-interactions a:hover {
+    color: #0ea5e9;
+}
+.post-interactions .text-red-500:hover {
+    color: #e11d48;
+}
+.post-interactions .text-green-600:hover {
+    color: #22c55e;
+}
+
+/* COMENTARIOS */
+.comments-section {
+    margin-top: 2rem;
+}
+.comment-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.7rem;
+    color: #2563eb;
+}
+.dark .comment-title {
+    color: #bae6fd;
+}
+.comment-card {
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.7rem;
+    box-shadow: 0 1px 4px rgba(30,58,138,0.07);
+}
+.dark .comment-card {
+    background: #23272f;
+}
+.comment-author {
+    font-weight: bold;
+    color: #2563eb;
+}
+.dark .comment-author {
+    color: #bae6fd;
+}
+.comment-date {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+.dark .comment-date {
+    color: #94a3b8;
+}
+.comment-text {
+    margin: 0.3rem 0 0.2rem 0;
+    color: #181c22;
+}
+.dark .comment-text {
+    color: #e0e7ef;
+}
+.comment-actions {
+    margin-top: 0.2rem;
+}
+.comment-actions button {
+    background: none;
+    border: none;
+    color: #e11d48;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.comment-actions button:hover {
+    color: #be123c;
+}
+
+/* FORMULARIO DE COMENTARIO */
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin-top: 1rem;
+}
+.comment-form textarea {
+    border-radius: 8px;
+    border: 1.5px solid #2563eb;
+    padding: 0.7rem;
+    background: #f8fafc;
+    color: #181c22;
+    font-size: 1rem;
+    resize: vertical;
+    transition: border 0.2s;
+}
+.dark .comment-form textarea {
+    background: #23272f;
+    color: #e0e7ef;
+}
+.comment-form textarea:focus {
+    border-color: #0ea5e9;
+    outline: none;
+}
+.comment-form button {
+    background: linear-gradient(90deg, #0ea5e9 40%, #2563eb 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.comment-form button:hover {
+    background: linear-gradient(90deg, #2563eb 40%, #0ea5e9 100%);
+}
+
+/* PAGINACIÓN */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 2.5rem 0 1.5rem 0;
+}
+.pagination a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+.pagination a:hover {
+    color: #0ea5e9;
+}
+.pagination span {
+    color: #64748b;
+    font-size: 1rem;
+}
+.dark .pagination span {
+    color: #e0e7ef;
+}
+
+/* RESPONSIVE */
+@media (max-width: 700px) {
+    .hero-content { padding: 2rem 0.5rem 1.5rem 0.5rem; }
+    .hero-title { font-size: 2rem; }
+    .post-form-container, .post-card { padding: 1.2rem 0.5rem 1.2rem 0.5rem; }
+}
+</style>
+
+<section class="relative bg-cover bg-center h-96 rounded-xl shadow-lg mb-12 overflow-hidden"
+    style="background-image: url('{% if subsection.image %}{{ subsection.image.url }}{% elif subsection.name == "Jabalina" %}https://images.unsplash.com/photo-1505843276877-1a9a5e50c1b2?auto=format&fit=crop&w=1200&q=80{% elif subsection.name == "Natación" %}https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80{% elif subsection.name == "Fútbol Internacional" %}https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80{% else %}/static/img/hero-default.jpg{% endif %}');">
+  <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
+  <div class="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-6">
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-lg tracking-tight">{{ subsection.name }}</h1>
+    <p class="text-lg md:text-xl max-w-2xl mb-6 drop-shadow">{{ subsection.description|default:"Sin descripción disponible." }}</p>
+    <a href="#posts" class="bg-white text-blue-700 font-semibold px-6 py-2 rounded-full shadow-md hover:bg-blue-700 hover:text-white transition">Ver publicaciones</a>
+  </div>
+</section>
+
+<!-- Post Form & Posts -->
+<div class="max-w-3xl mx-auto" id="posts">
+  <!-- Post Form -->
+  <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-2xl mb-12 border border-gray-200 dark:border-gray-700">
+    {% if user.is_authenticated %}
+      <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        <div>
+          <label for="id_text" class="block font-semibold text-gray-800 dark:text-gray-200 mb-2">¿Qué quieres compartir?</label>
+          {{ post_form.text|add_class:"w-full rounded-lg p-3 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white border border-blue-200 dark:border-blue-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition" }}
+        </div>
+        <div>
+          <label for="id_media" class="block font-semibold text-gray-800 dark:text-gray-200 mb-2">Imagen o video (opcional):</label>
+          {{ post_form.media|add_class:"block w-full text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-gray-800 border border-blue-200 dark:border-blue-800 rounded-lg cursor-pointer focus:outline-none" }}
+        </div>
+        <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-6 py-2 rounded-lg font-bold shadow transition w-full">
+          Publicar
+        </button>
+      </form>
+    {% else %}
+      <p class="text-center text-gray-600 dark:text-gray-300">
+        Debes <a href="{% url 'login' %}" class="text-blue-600 underline hover:text-blue-800">iniciar sesión</a> para publicar.
+      </p>
+    {% endif %}
+  </div>
+
+  <!-- Posts -->
+  {% for post in posts %}
+  <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-2xl mb-12 border border-gray-200 dark:border-gray-700">
+    <!-- Post Header -->
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center gap-3">
+        <span class="text-blue-700 dark:text-blue-300 font-semibold">{{ post.author.username }}</span>
+        <span class="text-xs text-gray-500">{{ post.created_at }}</span>
+      </div>
+      {% if post.author == request.user %}
+      <div class="flex items-center gap-4 text-sm">
+        <a href="{% url 'blogapp:edit_post' post.pk %}" class="text-blue-500 hover:underline">Editar</a>
+        <form method="post" action="{% url 'blogapp:delete_post' post.pk %}" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="text-red-500 hover:underline">Borrar</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Post Text -->
+    <p class="text-lg text-gray-800 dark:text-gray-100 mb-4 font-medium">{{ post.text }}</p>
+
+    <!-- Post Media -->
+    {% if post.media %}
+      {% if post.media.url|lower|slice:"-4:" == ".mp4" %}
+      <video controls class="rounded-lg w-full max-h-96 bg-gray-200 dark:bg-gray-700 mb-4">
+        <source src="{{ post.media.url }}" type="video/mp4">
+        Tu navegador no soporta el video.
+      </video>
+      {% else %}
+      <img src="{{ post.media.url }}" alt="Publicación de {{ post.author.username }}" class="rounded-lg w-full max-h-96 object-cover bg-gray-200 dark:bg-gray-700 mb-4">
+      {% endif %}
+    {% endif %}
+
+    <!-- Interaction Buttons -->
+    <div class="flex flex-wrap items-center gap-6 mt-4 text-sm">
+      <form method="post" action="{% url 'blogapp:like_post' post.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 transition">
+          👍 {{ post.likes }}
+        </button>
+      </form>
+      <form method="post" action="{% url 'blogapp:dislike_post' post.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-red-600 transition">
+          👎 {{ post.dislikes }}
+        </button>
+      </form>
+      <a href="#comentarios-{{ post.pk }}" class="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-green-600 transition">
+        💬 Comentar
+      </a>
+      <button class="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:text-gray-900 transition">
+        📤 Compartir
+      </button>
+    </div>
+
+    <!-- Comments -->
+    <div id="comentarios-{{ post.pk }}" class="mt-8 space-y-3">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Comentarios</h3>
+      {% for comment in post.comments.all %}
+      <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-blue-600 dark:text-blue-300 font-semibold">{{ comment.author.username }}</span>
+          <span class="text-xs text-gray-500">{{ comment.created_at }}</span>
+        </div>
+        <p class="text-gray-800 dark:text-gray-100">{{ comment.text }}</p>
+        {% if comment.author == request.user %}
+        <form method="post" action="{% url 'blogapp:delete_comment' comment.pk %}" class="mt-1">
+          {% csrf_token %}
+          <button type="submit" class="text-red-500 hover:underline text-sm">Borrar</button>
+        </form>
+        {% endif %}
+      </div>
+      {% empty %}
+      <p class="text-gray-500 dark:text-gray-400">No hay comentarios aún.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Comment Form -->
+    <form method="post" action="{% url 'blogapp:comment_post' post.pk %}" class="mt-4 space-y-2">
+      {% csrf_token %}
+      <textarea name="text" rows="2" class="w-full rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Agregar un comentario..."></textarea>
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">Comentar</button>
+    </form>
+  </div>
+  {% endfor %}
+
+  <!-- Pagination -->
+  <div class="pagination flex justify-center items-center gap-6 my-10 text-gray-700 dark:text-gray-300">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="hover:underline text-blue-600">Anterior</a>
+    {% endif %}
+    <span class="font-medium">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="hover:underline text-blue-600">Siguiente</a>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

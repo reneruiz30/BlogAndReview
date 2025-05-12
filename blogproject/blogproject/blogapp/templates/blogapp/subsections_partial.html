@@ -1,0 +1,16 @@
+<div class="instituciones-section">
+  {% for subsection in page_obj %}
+    <div class="institucion-card">
+      <!-- Aquí va el contenido de cada tarjeta de subsección -->
+    </div>
+  {% endfor %}
+</div>
+<div class="pagination" style="margin-top: 2rem;">
+  {% if page_obj.has_previous %}
+    <a href="#" class="page-btn" data-page="{{ page_obj.previous_page_number }}">&laquo; Anterior</a>
+  {% endif %}
+  <span class="current-page">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a href="#" class="page-btn" data-page="{{ page_obj.next_page_number }}">Siguiente &raquo;</a>
+  {% endif %}
+</div>

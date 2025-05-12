@@ -1,25 +1,27 @@
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Blog, Review, Comment
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
-
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from .forms import RegisterForm
-from django import forms
 from django.contrib.auth.decorators import login_required
-
-from .forms import RegisterForm
-from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetView
 
+from .models import Blog, Review, Comment, SportsSubsection, SubsectionComment, Post
+from .forms import RegisterForm, SubsectionCommentForm, SubsectionImageForm, PostForm, CommentForm, SportsSubsectionForm, SubsectionForm
+# from .views import SportsSubsectionCreateView  # <-- REMOVE or COMMENT OUT this line
 
+from .models import SportsSubsection, SubsectionComment
+from django.views.generic import DetailView
+from .models import Post, Comment
+from .models import Subsection
+from django.contrib.contenttypes.models import ContentType
+from .models import Subsection, SportsSubsection, Post
+from .forms import PostForm
 
 # Aplica LoginRequiredMixin y never_cache a BlogListView
 @method_decorator(never_cache, name='dispatch')
@@ -33,11 +35,20 @@ class BlogDetailView(DetailView):
     model = Blog
     template_name = 'blogapp/blog_detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        subsections = self.object.subsections.all()
+        paginator = Paginator(subsections, 6)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        context['page_obj'] = page_obj
+        return context
+
 
 class BlogCreateView(LoginRequiredMixin, CreateView):
     model = Blog
     fields = ['title', 'content']
-    template_name = 'blog_form.html'
+    template_name = 'blogapp/blog_form.html'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -106,11 +117,6 @@ def password_reset_done_redirect(request):
     return redirect('login')
 
 
-class CommentForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['content']
-
 def add_comment(request, blog_pk, review_pk):
     review = Review.objects.get(pk=review_pk)
     if request.method == 'POST':
@@ -127,5 +133,206 @@ def add_comment(request, blog_pk, review_pk):
         form = CommentForm()
     return render(request, 'blogapp/add_comment.html', {'form': form, 'review': review})
 
-    
 
+
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+
+
+
+@method_decorator(csrf_protect, name='dispatch')
+class SportsSubsectionDetailView(DetailView):
+    model = SportsSubsection
+    template_name = 'blogapp/subsection_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = SubsectionCommentForm()
+        context['image_form'] = SubsectionImageForm(instance=self.object)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        comment_form = SubsectionCommentForm(request.POST)
+        image_form = SubsectionImageForm(request.POST, request.FILES, instance=self.object)
+        if 'image' in request.FILES and image_form.is_valid():
+            image_form.save()
+            return redirect('blogapp:subsection_detail', pk=self.object.pk)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.subsection = self.object
+            comment.author = request.user
+            comment.save()
+            return redirect('blogapp:subsection_detail', pk=self.object.pk)
+        context = self.get_context_data(object=self.object)
+        context['form'] = comment_form
+        context['image_form'] = image_form
+        return self.render_to_response(context)
+
+
+@login_required
+def subsection_detail(request, pk):
+    subsection = get_object_or_404(Subsection, pk=pk)
+    content_type = ContentType.objects.get_for_model(subsection)
+    posts = Post.objects.filter(content_type=content_type, object_id=subsection.id)
+    if request.method == 'POST':
+        post_form = PostForm(request.POST, request.FILES)
+        if post_form.is_valid():
+            post = post_form.save(commit=False)
+            post.author = request.user
+            post.content_type = content_type
+            post.object_id = subsection.id
+            post.save()
+            return redirect('blogapp:subsection_detail', pk=pk)
+    else:
+        post_form = PostForm()
+    return render(request, 'blogapp/subsection_detail.html', {
+        'subsection': subsection,
+        'post_form': post_form,
+        'posts': posts,
+    })
+
+@login_required
+def like_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    post.likes += 1
+    post.save()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+def dislike_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    post.dislikes += 1
+    post.save()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+def comment_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.post = post
+            comment.save()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+def delete_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if post.author == request.user:
+        post.delete()
+        messages.success(request, "La publicación ha sido borrada exitosamente.")
+    else:
+        messages.error(request, "No tienes permiso para borrar esta publicación.")
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if comment.author == request.user:
+        comment.delete()
+        messages.success(request, "El comentario ha sido borrado exitosamente.")
+    else:
+        messages.error(request, "No tienes permiso para borrar este comentario.")
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+def edit_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if post.author == request.user:
+        if request.method == 'POST':
+            form = PostForm(request.POST, request.FILES, instance=post)
+            if form.is_valid():
+                form.save()
+                return redirect('blogapp:subsection_detail', pk=post.subsection.pk)
+        else:
+            form = PostForm(instance=post)
+        return render(request, 'blogapp/edit_post.html', {'form': form, 'post': post})
+    else:
+        messages.error(request, "No tienes permiso para editar esta publicación.")
+        return redirect('blogapp:subsection_detail', pk=post.subsection.pk)
+    
+@login_required
+def create_subsection(request, blog_id):
+    blog = get_object_or_404(Blog, pk=blog_id)
+    if request.method == 'POST':
+        form = SubsectionForm(request.POST, request.FILES)
+        if form.is_valid():
+            subsection = form.save(commit=False)
+            subsection.blog = blog
+            subsection.owner = request.user  # <--- Añade esta línea
+            subsection.save()
+            return redirect('blogapp:blog_detail', pk=blog.id)
+    else:
+        form = SubsectionForm()
+    return render(request, 'blogapp/create_subsection.html', {'form': form, 'blog': blog})
+
+
+@login_required
+def add_post_to_subsection(request, subsection_type, subsection_id):
+    if subsection_type == 'sports':
+        subsection = get_object_or_404(SportsSubsection, pk=subsection_id)
+    else:
+        subsection = get_object_or_404(Subsection, pk=subsection_id)
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.content_type = ContentType.objects.get_for_model(subsection)
+            post.object_id = subsection.id
+            post.save()
+            # Redirige al detalle de la subsección correspondiente
+            if subsection_type == 'sports':
+                return redirect('blogapp:subsection_detail', pk=subsection.id)
+            else:
+                return redirect('blogapp:subsection_detail', pk=subsection.id)
+    else:
+        form = PostForm()
+    return render(request, 'blogapp/add_post.html', {'form': form, 'subsection': subsection})
+
+from django.shortcuts import get_object_or_404, render
+from django.core.paginator import Paginator
+from .models import Blog
+
+def blog_detail(request, pk):
+    blog = get_object_or_404(Blog, pk=pk)
+    subsections = blog.subsections.all()
+    paginator = Paginator(subsections, 6)  # 6 subsecciones por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {
+        'object': blog,
+        'page_obj': page_obj,
+    }
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'blogapp/subsections_partial.html', context)
+    return render(request, 'blogapp/blog_detail.html', context)
+
+
+class SubsectionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Subsection
+    fields = ['name', 'description', 'image']
+    template_name = 'blogapp/subsection_form.html'
+
+    def get_success_url(self):
+        return reverse_lazy('blogapp:blog_detail', kwargs={'pk': self.object.blog.pk})
+
+    def test_func(self):
+        return self.request.user == self.get_object().owner
+
+class SubsectionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Subsection
+    template_name = 'blogapp/subsection_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse_lazy('blogapp:blog_detail', kwargs={'pk': self.object.blog.pk})
+
+    def test_func(self):
+        return self.request.user == self.get_object().owner
