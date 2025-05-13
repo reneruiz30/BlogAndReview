@@ -336,3 +336,42 @@ class SubsectionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.request.user == self.get_object().owner
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Subsection, SubsectionVote
+
+@csrf_exempt
+@login_required
+def rate_subsection(request, subsection_id, rating):
+    if request.method == 'POST':
+        try:
+            subsection = Subsection.objects.get(pk=subsection_id)
+            rating = int(rating)
+            user = request.user
+
+            vote, created = SubsectionVote.objects.get_or_create(user=user, subsection=subsection)
+            if vote.value == rating:
+                # Si el usuario hace clic en la misma estrella, elimina su voto (quita voto)
+                vote.delete()
+            else:
+                # Si es un voto nuevo o diferente, actualiza el valor
+                vote.value = rating
+                vote.save()
+
+            # Recalcular el promedio
+            votes = SubsectionVote.objects.filter(subsection=subsection)
+            if votes.exists():
+                avg = votes.aggregate(models.Avg('value'))['value__avg']
+            else:
+                avg = 0
+            subsection.rating = avg
+            subsection.rating_count = votes.count()
+            subsection.rating_sum = votes.aggregate(models.Sum('value'))['value__sum'] or 0
+            subsection.save()
+
+            return JsonResponse({'success': True, 'new_rating': round(subsection.rating or 0, 1)})
+        except Subsection.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'No existe la subsección'})
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})

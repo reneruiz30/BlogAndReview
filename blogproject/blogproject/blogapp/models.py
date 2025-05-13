@@ -36,6 +36,9 @@ class Subsection(models.Model):
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to='subsections/', blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subsections', null=True)  # <--- Añade esta línea
+    rating = models.FloatField(default=0)
+    rating_count = models.PositiveIntegerField(default=0)
+    rating_sum = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -79,3 +82,12 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class SubsectionVote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    subsection = models.ForeignKey(Subsection, on_delete=models.CASCADE)
+    value = models.PositiveSmallIntegerField()  # 1 a 5
+
+    class Meta:
+        unique_together = ('user', 'subsection')

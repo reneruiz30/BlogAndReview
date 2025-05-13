@@ -30,4 +30,6 @@ urlpatterns = [
     path('create/', views.BlogCreateView.as_view(), name='blog_create'),
     path('login/', views.login_view, name='login'),   # <-- Add this line
     # path('subsection/<int:pk>/', SportsSubsectionDetailView.as_view(), name='subsection_detail'), # Comment out or remove this line
+    path('rate_subsection/<int:subsection_id>/<int:rating>/', views.rate_subsection, name='rate_subsection'),
 ]
+

@@ -56,18 +56,25 @@
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <a href="{% url 'blogapp:blog_list' %}" 
          class="text-gray-900 dark:text-white text-2xl font-semibold tracking-wider transition-colors animate-typing overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5">
-        BlogSpace
+        TheBuilders
       </a>
       <div class="flex items-center space-x-4">
         <button onclick="toggleDarkMode()" class="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 text-gray-900 dark:text-white hover:scale-105 transition-all duration-300 shadow-lg">
           <span id="theme-icon" class="transition-transform duration-500 transform">🌞</span>
           <span id="theme-label" class="transition-opacity duration-500 ease-in-out">Modo Claro</span>
         </button>
-        <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 text-gray-900 dark:text-white hover:scale-105 transition-all duration-300 shadow-lg">
-          Sign In
-        </button>
         {% if user.is_authenticated %}
+          <form id="logoutForm" action="{% url 'blogapp:logout' %}?next=/login/" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="sign-btn flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 text-gray-900 dark:text-white hover:scale-105 transition-all duration-300 shadow-lg">
+              Sign In
+            </button>
+          </form>
           <a href="{% url 'blogapp:add_blog' %}" class="bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white font-medium py-2 px-4 rounded transition-all duration-500 ease-in-out">New Blog</a>
+        {% else %}
+          <button onclick="window.location.href='{% url 'blogapp:login' %}'" class="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 text-gray-900 dark:text-white hover:scale-105 transition-all duration-300 shadow-lg">
+            Sign In
+          </button>
         {% endif %}
       </div>
     </div>
@@ -119,5 +126,18 @@
       }
     }
   </script>
+    <script>
+      // Forzar recarga al retroceder si el usuario no está autenticado
+      if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+        window.addEventListener('pageshow', function(event) {
+          if (event.persisted) {
+            window.location.reload();
+          }
+        });
+        window.onpopstate = function() {
+          window.location.replace("{% url 'blogapp:login' %}");
+        };
+      }
+    </script>
 </body>
 </html>

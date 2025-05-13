@@ -1,23 +1,111 @@
 {% extends 'blogapp/base.html' %}
 {% block content %}
-<div class="max-w-lg mx-auto mt-8 bg-white p-6 rounded shadow">
-  <h2 class="text-2xl font-bold mb-4">Crear Sub-sección</h2>
+<style>
+.elegant-form-container {
+    max-width: 480px;
+    margin: 3rem auto 0 auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(30,58,138,0.13), 0 1.5px 8px rgba(14,165,233,0.10);
+    padding: 2.5rem 2rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.elegant-form-container h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    color: #232946;
+    letter-spacing: 1px;
+    text-align: center;
+}
+.elegant-form-container form {
+    width: 100%;
+}
+.elegant-form-container label {
+    font-size: 1.08rem;
+    margin-bottom: 0.3rem;
+    color: #1e293b;
+    font-weight: 600;
+    display: block;
+}
+.elegant-form-container input[type="text"],
+.elegant-form-container textarea,
+.elegant-form-container input[type="file"] {
+    width: 100%;
+    border-radius: 10px;
+    border: 1.5px solid #2563eb;
+    padding: 0.8rem 1rem;
+    font-size: 1.08rem;
+    margin-bottom: 1.2rem;
+    background: #f8fafc;
+    color: #181c22;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(30,58,138,0.07);
+}
+.elegant-form-container textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+.elegant-form-container input[type="text"]:focus,
+.elegant-form-container textarea:focus {
+    border-color: #0ea5e9;
+    outline: none;
+    box-shadow: 0 0 0 2px #0ea5e9aa;
+}
+.elegant-form-container button[type="submit"] {
+    background: linear-gradient(90deg, #0ea5e9 40%, #2563eb 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.9rem 2.2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    margin-top: 0.5rem;
+    box-shadow: 0 2px 8px rgba(14,165,233,0.10);
+    letter-spacing: 0.5px;
+    width: 100%;
+}
+.elegant-form-container button[type="submit"]:hover {
+    background: linear-gradient(90deg, #2563eb 40%, #0ea5e9 100%);
+    box-shadow: 0 4px 16px #0ea5e955;
+}
+.elegant-form-container .back-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1.05rem;
+    transition: color 0.2s;
+}
+.elegant-form-container .back-link:hover {
+    color: #0ea5e9;
+    text-decoration: underline;
+}
+</style>
+<div class="elegant-form-container">
+  <h2>CREAR POST</h2>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <div class="mb-4">
-      <label for="id_name" class="block font-semibold mb-1">Título de la Sub-sección</label>
+    <div>
+      <label for="id_name">Título de la Sub-sección</label>
       {{ form.name }}
     </div>
-    <div class="mb-4">
-      <label for="id_description" class="block font-semibold mb-1">Descripción</label>
+    <div>
+      <label for="id_description">Descripción</label>
       {{ form.description }}
     </div>
-    <div class="mb-4">
-      <label for="id_image" class="block font-semibold mb-1">Imagen (opcional)</label>
+    <div>
+      <label for="id_image">Imagen (opcional)</label>
       {{ form.image }}
     </div>
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Crear</button>
+    <button type="submit">Crear</button>
   </form>
-  <a href="{% url 'blogapp:blog_detail' pk=blog.id %}" class="inline-block mt-4 text-blue-600 hover:underline">Back to Blog</a>
+  <a href="{% url 'blogapp:blog_detail' pk=blog.id %}" class="back-link">Volver al Blog</a>
 </div>
 {% endblock %}
