@@ -1,10 +1,9 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-from .models import SportsSubsection, SubsectionComment
-from django import forms
-from .models import Post, Comment
-from .models import Subsection
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from .models import SportsSubsection, SubsectionComment, Post, Comment, Subsection, Profile
+
+
 
 class RegisterForm(UserCreationForm):
     document = forms.CharField(required=False, label="Número de documento")
@@ -50,3 +49,16 @@ class SubsectionForm(forms.ModelForm):
     class Meta:
         model = Subsection
         fields = ['name', 'description', 'image']  # Puedes agregar más campos si lo necesitas
+
+#
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']
+
+# Si tienes un modelo Profile para la foto de perfil:
+
+class AvatarChangeForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['avatar']

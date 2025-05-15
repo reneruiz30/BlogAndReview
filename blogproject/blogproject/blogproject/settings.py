@@ -42,8 +42,8 @@ INSTALLED_APPS = [
     'blogapp',
     'widget_tweaks',
     'django_ckeditor_5',  # <-- Agrega esta línea
-    #'admin_interface',
-    #'colorfield',
+    'admin_interface',
+    'colorfield',
    
 ]
 

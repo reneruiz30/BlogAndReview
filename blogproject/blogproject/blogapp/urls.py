@@ -31,5 +31,12 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),   # <-- Add this line
     # path('subsection/<int:pk>/', SportsSubsectionDetailView.as_view(), name='subsection_detail'), # Comment out or remove this line
     path('rate_subsection/<int:subsection_id>/<int:rating>/', views.rate_subsection, name='rate_subsection'),
+    path('edit-profile/', views.edit_profile, name='edit_profile'),
+    path('change-avatar/', views.change_avatar, name='change_avatar'),
+    path('change-username/', views.change_username, name='change_username'),
+    path('change-email/', views.change_email, name='change_email'),
+    path('change-password/', views.change_password, name='change_password'),
+    path('change-password/', views.change_password, name='change_password'),
+
 ]
 

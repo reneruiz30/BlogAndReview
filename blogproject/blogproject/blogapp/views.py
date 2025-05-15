@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetView
+from django.db import models
 
 from .models import Blog, Review, Comment, SportsSubsection, SubsectionComment, Post
 from .forms import RegisterForm, SubsectionCommentForm, SubsectionImageForm, PostForm, CommentForm, SportsSubsectionForm, SubsectionForm
@@ -22,6 +23,15 @@ from .models import Subsection
 from django.contrib.contenttypes.models import ContentType
 from .models import Subsection, SportsSubsection, Post
 from .forms import PostForm
+
+from django.contrib.auth.forms import UserChangeForm
+from .forms import EditProfileForm, AvatarChangeForm
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+
+# Remove this line:
+# from .forms import ProfileForm, AvatarForm
+
 
 # Aplica LoginRequiredMixin y never_cache a BlogListView
 @method_decorator(never_cache, name='dispatch')
@@ -151,6 +161,8 @@ class SportsSubsectionDetailView(DetailView):
         context['image_form'] = SubsectionImageForm(instance=self.object)
         return context
 
+    #
+    
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         comment_form = SubsectionCommentForm(request.POST)
@@ -169,6 +181,7 @@ class SportsSubsectionDetailView(DetailView):
         context['image_form'] = image_form
         return self.render_to_response(context)
 
+# Vistas para manejar las subsecciones
 
 @login_required
 def subsection_detail(request, pk):
@@ -192,6 +205,8 @@ def subsection_detail(request, pk):
         'posts': posts,
     })
 
+# Vistas para Like en los Posts
+
 @login_required
 def like_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -199,6 +214,7 @@ def like_post(request, pk):
     post.save()
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
+# Vistas para Dislike en los Posts
 
 @login_required
 def dislike_post(request, pk):
@@ -207,7 +223,7 @@ def dislike_post(request, pk):
     post.save()
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
-
+# Vistas para Comentar en los Posts
 @login_required
 def comment_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -220,7 +236,7 @@ def comment_post(request, pk):
             comment.save()
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
-
+# Vistas para eliminar los Posts
 @login_required
 def delete_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -231,6 +247,7 @@ def delete_post(request, pk):
         messages.error(request, "No tienes permiso para borrar esta publicación.")
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
+# Vistas para eliminar los comentarios
 @login_required
 def delete_comment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
@@ -241,7 +258,7 @@ def delete_comment(request, pk):
         messages.error(request, "No tienes permiso para borrar este comentario.")
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
-
+# Vistas para manejar las ediciones de las subsecciones
 @login_required
 def edit_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -258,6 +275,7 @@ def edit_post(request, pk):
         messages.error(request, "No tienes permiso para editar esta publicación.")
         return redirect('blogapp:subsection_detail', pk=post.subsection.pk)
     
+    # Vistas para manejar las subsecciones
 @login_required
 def create_subsection(request, blog_id):
     blog = get_object_or_404(Blog, pk=blog_id)
@@ -273,7 +291,7 @@ def create_subsection(request, blog_id):
         form = SubsectionForm()
     return render(request, 'blogapp/create_subsection.html', {'form': form, 'blog': blog})
 
-
+# Vistas para manejar los comentarios
 @login_required
 def add_post_to_subsection(request, subsection_type, subsection_id):
     if subsection_type == 'sports':
@@ -301,6 +319,7 @@ from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator
 from .models import Blog
 
+# Aplica LoginRequiredMixin a BlogDetailView
 def blog_detail(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
     subsections = blog.subsections.all()
@@ -327,6 +346,8 @@ class SubsectionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         return self.request.user == self.get_object().owner
 
+
+
 class SubsectionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Subsection
     template_name = 'blogapp/subsection_confirm_delete.html'
@@ -342,6 +363,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Subsection, SubsectionVote
 
+# Vistas para manejar los votos
+
 @csrf_exempt
 @login_required
 def rate_subsection(request, subsection_id, rating):
@@ -351,14 +374,16 @@ def rate_subsection(request, subsection_id, rating):
             rating = int(rating)
             user = request.user
 
-            vote, created = SubsectionVote.objects.get_or_create(user=user, subsection=subsection)
-            if vote.value == rating:
-                # Si el usuario hace clic en la misma estrella, elimina su voto (quita voto)
-                vote.delete()
-            else:
-                # Si es un voto nuevo o diferente, actualiza el valor
+            vote, created = SubsectionVote.objects.get_or_create(
+                user=user,
+                subsection=subsection,
+                defaults={'value': rating}
+            )
+            if not created and vote.value != rating:
+                # Si el voto ya existe y el valor es diferente, actualiza el valor
                 vote.value = rating
                 vote.save()
+            # Si el voto ya existe y el valor es igual, no hace nada
 
             # Recalcular el promedio
             votes = SubsectionVote.objects.filter(subsection=subsection)
@@ -375,3 +400,84 @@ def rate_subsection(request, subsection_id, rating):
         except Subsection.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'No existe la subsección'})
     return JsonResponse({'success': False, 'error': 'Método no permitido'})
+
+# Vistas para editar el perfil
+@login_required
+def edit_profile(request):
+    user = request.user
+    profile = user.profile
+    if request.method == 'POST':
+        # Handle delete image action
+        if 'delete_image' in request.POST:
+            if profile.avatar:
+                profile.avatar.delete(save=True)
+                messages.success(request, 'Profile photo deleted successfully.')
+            return redirect('blogapp:edit_profile')
+        form_profile = EditProfileForm(request.POST, instance=user)
+        form_avatar = AvatarChangeForm(request.POST, request.FILES, instance=profile)
+        if form_profile.is_valid() and form_avatar.is_valid():
+            form_profile.save()
+            form_avatar.save()
+            return redirect('blogapp:blog_list')  # Redirect to blog list after saving
+    else:
+        form_profile = EditProfileForm(instance=user)
+        form_avatar = AvatarChangeForm(instance=profile)
+    return render(request, 'blogapp/edit_profile.html', {
+        'form_profile': form_profile,
+        'form_avatar': form_avatar,
+        'user': user,
+    })
+
+@login_required
+def change_username(request):
+    if request.method == 'POST':
+        new_username = request.POST.get('username')
+        if new_username:
+            if User.objects.filter(username=new_username).exists():
+                messages.error(request, 'Username already taken.')
+            else:
+                request.user.username = new_username
+                request.user.save()
+                messages.success(request, 'Username actualizado Correctamente.')
+                return redirect('blogapp:edit_profile')
+    return render(request, 'blogapp/change_username.html')
+
+@login_required
+def change_avatar(request):
+    if request.method == 'POST':
+        form = AvatarChangeForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Avatar actualizado Correctamente.')
+            return redirect('blogapp:edit_profile')
+    else:
+        form = AvatarChangeForm(instance=request.user.profile)
+    return render(request, 'blogapp/change_avatar.html', {'form': form})
+
+@login_required
+def change_email(request):
+    if request.method == 'POST':
+        new_email = request.POST.get('email')
+        if new_email:
+            request.user.email = new_email
+            request.user.save()
+            messages.success(request, 'Email actualizado Correctamente.')
+            return redirect('blogapp:edit_profile')
+        else:
+            messages.error(request, 'Please provide a valid email address.')
+    return render(request, 'blogapp/change_email.html')
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('blogapp:blog_list')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'blogapp/change_password.html', {'form': form})

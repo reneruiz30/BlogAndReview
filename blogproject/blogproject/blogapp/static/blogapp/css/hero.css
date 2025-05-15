@@ -106,17 +106,18 @@ body {
 .carrusel-cards-container {
     display: flex;
     align-items: flex-end;
-    transition: transform 0.5s cubic-bezier(.4,2,.6,1);
+    transition: transform 1.4s cubic-bezier(.77,0,.18,1);
     will-change: transform;
     pointer-events: auto;
 }
 .carrusel-card {
+    will-change: transform;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
     width: 200px;
     height: 320px;
     background: #222;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
     background-size: cover;
     background-position: center;
     color: #fff;
@@ -128,15 +129,14 @@ body {
     cursor: pointer;
     margin: 0 12px;
     transition: 
-        transform 0.5s cubic-bezier(.4,2,.6,1), 
-        box-shadow 0.5s, 
-        opacity 0.5s,
-        width 0.5s, height 0.5s;
+        transform 1s cubic-bezier(.77,0,.18,1), 
+        box-shadow 1s cubic-bezier(.77,0,.18,1), 
+        opacity 1s cubic-bezier(.77,0,.18,1),
+        width 1s cubic-bezier(.77,0,.18,1), 
+        height 1s cubic-bezier(.77,0,.18,1);
     position: relative;
-    filter: blur(0px);
     pointer-events: auto;
     contain: layout paint;
-      
 }
 .carrusel-card.active {
     width: 270px;
@@ -145,7 +145,6 @@ body {
     z-index: 2;
     box-shadow: 0 16px 48px rgba(0,0,0,0.28);
     opacity: 1;
-    filter: none;
 }
 .carrusel-card .carrusel-title {
     font-size: 1.2rem;
@@ -229,40 +228,42 @@ body {
     }
 }
 @media (max-width: 900px) {
-    .hero-main-card {
-        left: 2vw;
-        top: 6vh;
-        max-width: 260px;
+    .custom-header-actions {
+        top: 12px;
+        right: 8px;
+        gap: 8px;
+        padding: 6px 10px;
     }
-    .hero-main-card h1 {
-        font-size: 1.3rem;
-    }
-    .carrusel-cards-viewport {
-        width: 98vw;
-        height: 160px;
-    }
-    .carrusel-card {
-        width: 80px;
-        height: 110px;
-        padding: 6px;
-    }
-    .carrusel-card.active {
-        width: 110px;
-        height: 150px;
-    }
-    .carrusel-arrow.left, .carrusel-arrow.right {
-        width: 24px;
-        height: 24px;
-        font-size: 1rem;
-        bottom: 60px;
-    }
-    .carrusel-indicator {
-        font-size: 0.9rem;
-        right: 2vw;
-        bottom: 2vh;
+    .sign-btn, .newblog-btn {
+        padding: 7px 10px;
+        font-size: 0.98em;
+        height: 38px;
     }
 }
-
+@media (max-width: 600px) {
+    .custom-header-actions {
+        position: static;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin: 16px 0 0 0;
+        width: 100%;
+        max-width: 320px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(24, 28, 34, 0.85);
+        border-radius: 18px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+        padding: 10px 0;
+    }
+    .sign-btn, .newblog-btn {
+        width: 90%;
+        min-width: 0;
+        font-size: 1em;
+        height: 44px;
+        margin: 0 auto;
+    }
+}
 .user-info-header {
     position: fixed;
     top: 24px;
@@ -366,5 +367,15 @@ body {
 .user-info-header.visible,
 .custom-header-actions.visible {
     opacity: 1;
+}
+.carrusel-cards-container {
+    transition: transform 0.6s cubic-bezier(.4,2,.6,1);
+}
+.hero-carrusel-bg.fading {
+    opacity: 0.3;
+    transition: opacity 0.4s;
+}
+.hero-carrusel-bg {
+    transition: opacity 0.4s, transform 1.2s cubic-bezier(.4,2,.6,1);
 }
 
