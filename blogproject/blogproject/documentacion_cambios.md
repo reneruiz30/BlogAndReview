@@ -8,6 +8,13 @@ Este documento resume los principales cambios realizados en el proyecto, basados
 - 🔧 **Actualización de configuración:** Se actualizó el archivo `settings.py`.  
   _Autor: Anibal00_
 
+- 🔀 **Fusión con rama principal:**  
+  _Merge branch 'main' of https://github.com/reneruiz30/BlogAndReview_  
+  _Autor: JocJaramillo_
+
+- ✅ **Página Concluida Oficialmente.**  
+  _Autor: JocJaramillo_
+
 ## 🗓️ 13 de mayo de 2025
 - ✅ **Página terminada.**  
   _Autor: JocJaramillo_
@@ -51,4 +58,4 @@ Este documento resume los principales cambios realizados en el proyecto, basados
 
 ---
 
-> Última actualización del historial: 14 de mayo de 2025.
+> Última actualización del historial: 15 de mayo de 2025.
