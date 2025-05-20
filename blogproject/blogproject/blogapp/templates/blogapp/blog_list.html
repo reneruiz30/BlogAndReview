@@ -73,7 +73,7 @@
 <div class="custom-header-actions">
     <form id="logoutForm" action="{% url 'blogapp:logout' %}?next=/login/" method="post" style="display:inline;">
         {% csrf_token %}
-        <button type="submit" class="sign-btn">Sign In</button>
+        <button type="submit" class="sign-btn">Sign Out</button>
     </form>
     <a href="{% url 'blogapp:add_blog' %}" class="newblog-btn">New Blog</a>
 </div>

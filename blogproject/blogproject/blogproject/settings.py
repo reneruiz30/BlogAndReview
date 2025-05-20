@@ -92,7 +92,8 @@ DATABASES = {
 
 
 
-# Validacion de la contrasena
+
+# Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -104,6 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
@@ -124,7 +126,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'blogapp/static'),
 ]
 
-# Tipo de campo de clave principal predeterminado
+# Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

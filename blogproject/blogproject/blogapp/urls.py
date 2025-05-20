@@ -10,10 +10,8 @@ urlpatterns = [
     path('post/<int:pk>/delete/', views.delete_post, name='delete_post'),
     path('comment/<int:pk>/delete/', views.delete_comment, name='delete_comment'),
     path('post/<int:pk>/edit/', views.edit_post, name='edit_post'),
-    
    path('subsection/<str:subsection_type>/<int:subsection_id>/post/add/', views.add_post_to_subsection, name='add_post_to_subsection'),
-    
-    path('blogs/subsection/<int:pk>/', views.subsection_detail, name='subsection_detail'), # Function-based view
+    path('blogs/subsection/<int:pk>/', views.subsection_detail, name='subsection_detail'), 
     path('post/<int:pk>/like/', views.like_post, name='like_post'),
     path('post/<int:pk>/dislike/', views.dislike_post, name='dislike_post'),
     path('post/<int:pk>/comment/', views.comment_post, name='comment_post'),
@@ -28,8 +26,7 @@ urlpatterns = [
     path('blog/<int:blog_pk>/review/<int:review_pk>/comment/add/', views.add_comment, name='add_comment'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('create/', views.BlogCreateView.as_view(), name='blog_create'),
-    path('login/', views.login_view, name='login'),   # <-- Add this line
-    # path('subsection/<int:pk>/', SportsSubsectionDetailView.as_view(), name='subsection_detail'), # Comment out or remove this line
+    path('login/', views.login_view, name='login'),   
     path('rate_subsection/<int:subsection_id>/<int:rating>/', views.rate_subsection, name='rate_subsection'),
     path('edit-profile/', views.edit_profile, name='edit_profile'),
     path('change-avatar/', views.change_avatar, name='change_avatar'),

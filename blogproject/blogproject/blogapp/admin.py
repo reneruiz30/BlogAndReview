@@ -3,9 +3,11 @@ from .models import Blog, Review, Comment, SportsSubsection, SubsectionComment
 from django.utils.html import format_html
 from .models import Subsection
 
+#clase para el blog
 class BlogAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'created_at', 'image_tag')
     readonly_fields = ('image_tag',)
+
 
     class Media:
         css = {
@@ -24,6 +26,8 @@ admin.site.register(Comment)
 admin.site.register(SportsSubsection)
 admin.site.register(SubsectionComment)
 
+
+#Clase para la sección
 @admin.register(Subsection)
 class SubsectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'blog')  # Ajusta los campos según tu modelo
