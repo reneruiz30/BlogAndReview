@@ -7,7 +7,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.contrib.auth.models import User
 
+class ChatMessage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    room_name = models.CharField(max_length=100, default='global')
 
 #crear modelo de blog
 class Blog(models.Model):
@@ -125,3 +131,10 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     if hasattr(instance, 'profile'):
         instance.profile.save()
+        
+class Room(models.Model):
+    name = models.CharField(max_length=100, unique=True, verbose_name='Nombre')
+    users = models.ManyToManyField(User, related_name='rooms_joined', blank=True)
+
+    def __str__(self):
+        return self.name

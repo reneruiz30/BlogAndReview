@@ -11,8 +11,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetView
 from django.db import models
+from django.core.paginator import Paginator
 
-from .models import Blog, Review, Comment, SportsSubsection, SubsectionComment, Post
+from .models import Blog, Review, Comment, SportsSubsection, SubsectionComment, Post, Profile
 from .forms import RegisterForm, SubsectionCommentForm, SubsectionImageForm, PostForm, CommentForm, SportsSubsectionForm, SubsectionForm
 
 from django.views.generic import DetailView
@@ -26,6 +27,8 @@ from django.contrib.auth.forms import UserChangeForm
 from .forms import EditProfileForm, AvatarChangeForm
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+
+
 
 # Remove this line:
 # from .forms import ProfileForm, AvatarForm
@@ -51,6 +54,18 @@ class BlogDetailView(DetailView):
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         context['page_obj'] = page_obj
+        
+        # Asegurarse de que el usuario tiene un perfil al acceder a blog_detail
+        if self.request.user.is_authenticated:
+            try:
+                # Intenta acceder al perfil del usuario
+                profile = self.request.user.profile
+            except Profile.DoesNotExist:
+                # Si no existe, crea uno
+                profile = Profile.objects.create(user=self.request.user)
+            # Puedes añadir el perfil al contexto si lo necesitas en la plantilla, aunque ya está accesible vía user.profile
+            # context['user_profile'] = profile 
+            
         return context
 
 #Permite a un usuario autenticado crear un nuevo blog.
@@ -199,6 +214,8 @@ def subsection_detail(request, pk):
         'subsection': subsection,
         'post_form': post_form,
         'posts': posts,
+        'user': request.user,  # <-- Añade esto
+        'request': request,    # <-- Añade esto
     })
 
 # Permiten dar "me gusta" a un post.
@@ -398,7 +415,11 @@ def rate_subsection(request, subsection_id, rating):
 @login_required
 def edit_profile(request):
     user = request.user
-    profile = user.profile
+    try:
+        profile = user.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=user)
+    
     if request.method == 'POST':
         # Handle delete image action
         if 'delete_image' in request.POST:

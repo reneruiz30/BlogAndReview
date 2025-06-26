@@ -2,6 +2,10 @@ from django.contrib import admin
 from .models import Blog, Review, Comment, SportsSubsection, SubsectionComment
 from django.utils.html import format_html
 from .models import Subsection
+from .models import Room
+
+
+admin.site.register(Room)
 
 #clase para el blog
 class BlogAdmin(admin.ModelAdmin):
